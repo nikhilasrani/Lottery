@@ -1,13 +1,13 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const Web3 = require("web3");
 const { interface, bytecode } = require("./compile");
+const dotenv = require("dotenv").config();
 
-const provider = new HDWalletProvider(
-  "juice bicycle seek common shield hello below angry source share exact mobile",
-  // remember to change this to your own phrase!
-  "https://rinkeby.infura.io/v3/15c1d32581894b88a92d8d9e519e476c"
-  // remember to change this to your own endpoint!
-);
+const seed_phase = process.env.SEED_PHASE;
+const network_url = process.env.NETWORK_URL;
+
+const provider = new HDWalletProvider(seed_phase, network_url);
+
 const web3 = new Web3(provider);
 
 const deploy = async () => {
@@ -16,9 +16,10 @@ const deploy = async () => {
   console.log("Attempting to deploy from account", accounts[0]);
 
   const result = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({ data: bytecode })
-    .send({ gas: "1000000", from: accounts[0] });
+    .deploy({ data: bytecode, arguments: ["Hi there!"] })
+    .send({ gas: 1000000, from: accounts[0] });
 
   console.log("Contract deployed to", result.options.address);
 };
+
 deploy();
